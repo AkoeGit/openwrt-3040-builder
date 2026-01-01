@@ -1,0 +1,47 @@
+name: Build OpenWrt for Wyse 3040
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y build-essential libncurses5-dev gawk gettext unzip file python3
+
+      - name: Download ImageBuilder
+        run: |
+          wget https://downloads.openwrt.org/releases/23.05.5/targets/x86/64/openwrt-imagebuilder-23.05.5-x86-64.Linux-x86_64.tar.xz
+          tar -xf openwrt-imagebuilder-23.05.5-x86-64.Linux-x86_64.tar.xz
+
+      - name: Build custom OpenWrt image
+        run: |
+          cd openwrt-imagebuilder-23.05.5-x86-64.Linux-x86_64
+          make image PROFILE="generic" \
+            PACKAGES="\
+              luci \
+              kmod-usb-core \
+              kmod-usb2 \
+              kmod-usb3 \
+              kmod-usb-storage \
+              kmod-usb-storage-extras \
+              kmod-usb-net \
+              kmod-usb-net-cdc-ether \
+              kmod-usb-net-rndis \
+              kmod-usb-net-ax88179_178a \
+              kmod-fs-ext4 \
+              block-mount \
+            "
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: openwrt-wyse3040
+          path: openwrt-imagebuilder-23.05.5-x86-64.Linux-x86_64/bin/targets/x86/64/
