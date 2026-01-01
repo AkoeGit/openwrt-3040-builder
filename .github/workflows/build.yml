@@ -35,7 +35,7 @@ jobs:
               kmod-usb-net \
               kmod-usb-net-cdc-ether \
               kmod-usb-net-rndis \
-              kmod-usb-net-ax88179_178a \
+              kmod-usb-net-asix-ax88179 \
               kmod-fs-ext4 \
               block-mount \
             "
